@@ -16,36 +16,44 @@
     name="keywords"
     content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard" />
   <!--end::Primary Meta Tags-->
-  <!---------------------------------------   CSS/ESTILOS  ---------------------------------------------------->
-  <link href="<?= base_url('public/dist/css/adminlte.css') ?>" rel="stylesheet">
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
-    integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
-    crossorigin="anonymous" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    integrity="sha256-9kPW/n5nn53j4WMRYAxe9c1rCY96Oogo/MKSVdKzPmI="
-    crossorigin="anonymous" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css"
-    integrity="sha256-tZHrRjVqNSRyWg2wbppGnT833E/Ys0DHWGwT04GiqQg="
-    crossorigin="anonymous" />
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
-    integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
-    crossorigin="anonymous" />
-    <link href="<?= base_url('public/dist/libs/fontawesome/css/fontawesome.css') ?>" rel="stylesheet">
-	  <link href="<?= base_url('public/dist/libs/fontawesome/css/solid.css') ?>" rel="stylesheet">
-    <link href="<?= base_url('public/dist/libs/sweetalert2/dist/sweetalert2.css') ?>" rel="stylesheet" />
-	  <link href="<?= base_url('public/dist/libs/datatables/datatables.min.css') ?>" rel="stylesheet">
-  <?= $this->renderSection('estilos'); ?>
-  <!---------------------------------------   CSS/ESTILOS  ---------------------------------------------------->
+ <!---------------------------------------   CSS/ESTILOS  ---------------------------------------------------->
+<!-- Tipografía -->
+<link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+  integrity="sha256-tXJfXfp6Ewt1ilPzLDtQnJV4hclT9XuaZUKyUvmyr+Q="
+  crossorigin="anonymous" />
+<!-- Bootstrap 5 (base de diseño) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Iconos -->
+<link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  integrity="sha256-9kPW/n5nn53j4WMRYAxe9c1rCY96Oogo/MKSVdKzPmI="
+  crossorigin="anonymous" />
+<link href="<?= base_url('public/dist/libs/fontawesome/css/fontawesome.css') ?>" rel="stylesheet">
+<link href="<?= base_url('public/dist/libs/fontawesome/css/solid.css') ?>" rel="stylesheet">
+<!-- Plugin: OverlayScrollbars -->
+<link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css"
+  integrity="sha256-tZHrRjVqNSRyWg2wbppGnT833E/Ys0DHWGwT04GiqQg="
+  crossorigin="anonymous" />
+<!-- Plugin: ApexCharts -->
+<link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
+  integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
+  crossorigin="anonymous" />
+<!-- Plugin: DataTables -->
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+<!-- Local: DataTables extendido (solo uno, ya estaba duplicado) -->
+<link href="<?= base_url('public/dist/libs/datatables/datatables.min.css') ?>" rel="stylesheet">
+<!-- Plugin: SweetAlert2 -->
+<link href="<?= base_url('public/dist/libs/sweetalert2/dist/sweetalert2.css') ?>" rel="stylesheet" />
+<!-- Estilos personalizados / AdminLTE -->
+<link href="<?= base_url('public/dist/css/adminlte.css') ?>" rel="stylesheet">
+<!-- Estilos específicos de la vista -->
+<?= $this->renderSection('estilos'); ?>
+<!---------------------------------------   FIN CSS/ESTILOS  ---------------------------------------------------->
 </head>
-
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
   <!--begin::App Wrapper-->
   <div class="app-wrapper">
@@ -60,16 +68,9 @@
               <i class="bi bi-list"></i>
             </a>
           </li>
-          <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
-          <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#" data-lte-toggle="fullscreen">
-              <i data-lte-icon="maximize" class="bi bi-arrows-fullscreen"></i>
-              <i data-lte-icon="minimize" class="bi bi-fullscreen-exit" style="display: none"></i>
-            </a>
-          </li>
+          <button type="button" class="btn btn-block btn-dark btn-flat" onclick="abrir_modalempresa()"><i class="fas fa-exchange-alt"></i></button>
           <!--end::Fullscreen Toggle-->
           <!--begin::User Menu Dropdown-->
           <li class="nav-item dropdown user-menu">
@@ -122,8 +123,8 @@
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Dashboard v3</li>
+                <li class="breadcrumb-item"><i class="fa-solid fa-industry"></i> <?= session('sucursal') ?></li>
+                <li class="breadcrumb-item"><i class="fa-solid fa-warehouse"></i> <?= session('almacen') ?></li>
               </ol>
             </div>
             <?= $this->renderSection('contenido_template'); ?>
@@ -152,31 +153,75 @@
     <!--end::Footer-->
   </div>
   <!--end::App Wrapper-->
-  <!---------------------------------------   SCRIPTS  ---------------------------------------------------->
-  <script>
-		var URL_PY = "<?= base_url() ?>";
-	</script>
-  <script src="<?= base_url('public/dist/js/adminlte.js') ?>"></script>
-  <script
-    src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
-    integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ="
-    crossorigin="anonymous"></script>
-  <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-  <script
-    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-    crossorigin="anonymous"></script>
-  <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-    integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-    crossorigin="anonymous"></script>
-  <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-  <script src="<?= base_url('public/dist/libs/jquery/jquery-3.7.1.min.js') ?>"></script>
-  <script src="<?= base_url('public/dist/libs/sweetalert2/dist/sweetalert2.js') ?>"></script>
-  <script src="<?= base_url('public/dist/libs/datatables/datatables.min.js') ?>"></script>
-	<?= $this->renderSection('scripts'); ?>
-  <!---------------------------------------   SCRIPTS  ---------------------------------------------------->
+  <!-------------------------MODAL---------------------->
+  <div class="modal fade" id="mdlcambio" tabindex="-1" role="dialog" aria-labelledby="lbltitulo" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="lbltitulo" name="lbltitulo" class="modal-title">Cambiar Credenciales</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="control-label"><i class="fa fa-building"></i>&nbsp;Empresa</label>
+            <select id="cmbempresas" name="cmbempresas" class="form-select form-select-sm"></select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="control-label"><i class="fa fa-industry"></i>&nbsp;Sucursal</label>
+            <select id="cmbsucursal" name="cmbsucursal" class="form-select form-select-sm"></select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="control-label"><i class="fa fa-warehouse"></i>&nbsp;Almacén</label>
+            <select id="cmbalmacen" name="cmbalmacen" class="form-select form-select-sm"></select>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnguardar" name="btnguardar" onclick="cambio_empresa()">
+            <i class="fas fa-exchange-alt"></i>&nbsp;Cambiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!---------------------------------------   SCRIPTS   ---------------------------------------------------->
+<!-- Variables JS (deben ir antes que cualquier otro script que las use) -->
+<script>
+  var URL_PY = "<?= base_url() ?>";
+</script>
+<script>
+  var codalmacen = "<?= session()->get('codigoalmacen') ?? 'NL' ?>";
+</script>
+<!-- jQuery (debe cargarse antes que cualquier plugin que lo requiera, como DataTables o jsGrid) -->
+<script src="<?= base_url('public/dist/libs/jquery/jquery-3.7.1.min.js') ?>"></script>
+<!-- Popper.js (necesario para Bootstrap) -->
+<script
+  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+  crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+  integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+  crossorigin="anonymous"></script>
+<!-- OverlayScrollbars -->
+<script
+  src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
+  integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ="
+  crossorigin="anonymous"></script>
+<!-- DataTables Core -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<!-- DataTables Responsive Extension -->
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<!-- DataTables Bootstrap 5 Integration -->
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="<?= base_url('public/dist/libs/sweetalert2/dist/sweetalert2.js') ?>"></script>
+<!-- AdminLTE y JS personalizados -->
+<script src="<?= base_url('public/dist/js/adminlte.js') ?>"></script>
+<script src="<?= base_url('public/dist/js/paginas/generales.js') ?>"></script>
+<!-- Scripts específicos de la vista -->
+<?= $this->renderSection('scripts'); ?>
+<!---------------------------------------    SCRIPTS   ---------------------------------------------------->
 </body>
 <!--end::Body-->
 

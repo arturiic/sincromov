@@ -13,46 +13,42 @@ $this->extend('dashboard/template.php'); ?>
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form>
-                <div class="card-body">
-                    <div class="row row-cards">
-                        <div class="col-md-8 col-12">
-                            <div class="form-group">
-                                <label>Fecha</label>
-                                <input type="date" class="form-control" id="dtpfecha" value="<?php echo date('Y-m-d'); ?>">
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-12 d-flex align-items-end">
-                            <button type="submit" class="btn btn-warning w-100">
-                                <i class="fa-regular fa-eye"></i>&nbsp;Ver Movimientos</button>
+            <div class="card-body">
+                <div class="row row-cards">
+                    <div class="col-md-8 col-12">
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input type="date" class="form-control" id="datefecha" value="<?php echo date('Y-m-d'); ?>">
                         </div>
                     </div>
+                    <div class="col-md-4 col-12 d-flex align-items-end">
+                        <button onclick="ver_movimientos_sincro()" class="btn btn-warning w-100">
+                            <i class="fa-regular fa-eye"></i>&nbsp;Ver Movimientos</button>
+                    </div>
                 </div>
-            </form>
-        </div>
-        <div class="card">
-            <!-- /.card-header -->
-            <div class="card-body table-responsive p-0">
-                <table class="table table-head-fixed text-nowrap">
-                    <thead>
-                        <tr>
-                            <th>Titulo</th>
-                            <th>Destinatario</th>
-                            <th>Fecha</th>
-                            <th>Monto</th>
-                            <th>Moneda</th>
-                            <th>N°Operación</th>
-                        </tr>
-                    </thead>
-                </table>
             </div>
-            <!-- /.card-body -->
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tbl_sincromovi" class="table table-bordered table-hover dataTable dtr-inline">
+                        <thead>
+                            <tr>
+                                <th>Titulo</th>
+                                <th>Destinatario</th>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Moneda</th>
+                                <th>N° de operación</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
             <div class="card-footer">
-                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i>
+                <button onclick="insertarMovimientos()" class="btn btn-primary"><i class="fa-solid fa-plus"></i>
                     &nbsp;Insertar Movimientos</button>
             </div>
         </div>
-        <!-- /.row (main row) -->
     </div>
     <!--end::Container-->
 </div>
