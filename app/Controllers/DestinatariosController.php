@@ -81,4 +81,30 @@ class DestinatariosController extends Controller
             return $this->response->setJSON(['error' => 'Ocurrió un error al actualizar el destinatario: ' . $e->getMessage()]);
         }
     }
+    public function buscarDestinatarios()
+    {
+        $termino = $this->request->getGet('q');
+        $pagina = $this->request->getGet('page') ?? 1; // Página actual
+        $limite = 10; // Resultados por página
+        $offset = ($pagina - 1) * $limite; // Calcular desplazamiento
+
+        if (strlen($termino) >= 1) {
+            $model = new DestinatariosModel();
+            $destinatarios = $model->buscarDestinatarios($termino, $limite, $offset);
+
+            // Contar total de coincidencias con el nombre correcto de la columna
+            $total = $model->where('estado', 'ACTIVO')
+                ->like('nombre', $termino)
+                ->countAllResults();
+
+            return $this->response->setJSON([
+                'destinatarios' => $destinatarios,
+                'total' => $total,
+                'pagina' => $pagina,
+                'limite' => $limite
+            ]);
+        }
+
+        return $this->response->setJSON(['destinatarios' => [], 'total' => 0]);
+    }
 }

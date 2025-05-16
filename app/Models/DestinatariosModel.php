@@ -33,4 +33,14 @@ class DestinatariosModel extends Model
             ->where('iddestinatario', $cod)
             ->first();
     }
+    //FUNCIONES PARA MOVIMIENTOS
+    public function buscarDestinatarios($searchTerm, $limite, $offset)
+    {
+        return $this->select("iddestinatario,nombre")
+            ->where('estado', 'ACTIVO')
+            ->like('nombre', $searchTerm)
+            ->orderBy('nombre', 'ASC')
+            ->limit($limite, $offset) // Asegurar que se usa limit y offset correctamente
+            ->findAll();
+    }
 }

@@ -35,4 +35,15 @@ class DetEntidadEmpresaModel extends Model
             ->where('iddet_entidad_empresa', $cod)
             ->first();
     }
+    //PARA EL FOREACH DE MOVIMIENTOS
+    public function selectCuentas()
+    {
+        $session = session(); // Accede a la sesión
+        $codempresa = $session->get('codempresa'); // Obtiene el codempresa
+
+        return $this->select('iddet_entidad_empresa, descripcion')
+            ->where('idempresa', $codempresa)
+            ->where('estado', 'ACTIVO')
+            ->findAll();
+    }
 }

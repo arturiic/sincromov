@@ -92,13 +92,18 @@ document.addEventListener('contextmenu', function (e) {
   };
 })(jQuery);
 
-function abrir_modalempresa() {
+function abrirModalEmpresa() {
   var myModal = new bootstrap.Modal(document.getElementById('mdlcambio'));
     myModal.show();
 }
 
+function abrirModalPerfil() {
+  var myModal = new bootstrap.Modal(document.getElementById('mdlperfil'));
+    myModal.show();
+}
+
 if (codalmacen == 'NL' ) {
-  abrir_modalempresa();
+  abrirModalEmpresa();
 };
 
 $(document).ready(function () {
@@ -201,7 +206,7 @@ function cargar_almacen_x_sucursal(sucursal) {
   });
 }
 
-function cambio_empresa() {
+function cambioEmpresa() {
   var empresa = $('#cmbempresas').val();
   var sucursal = $('#cmbsucursal').val();
   var almacen = $('#cmbalmacen').val();

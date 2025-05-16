@@ -29,7 +29,15 @@ $routes->group('cambio', ['filter' => 'CambioFilter'], function ($routes) {
 //RUTAS PARA EL PADRE MOVIMIENTOS
 $routes->group('movimientos', ['filter' => 'AuthFilter'], function ($routes) {
     $routes->get('sincro', 'SincromovimientosController::sincronizacion_movimientos');
-    $routes->post('insertar_sincromov', 'MovimientosController::guardar_movimientos');
+    $routes->post('insertar_sincromov', 'MovimientosController::guardarMovimientos');
+    $routes->post('registrar_xml', 'MovimientosController::registrarMovimientos');
+    $routes->get('movEntradaXfecha', 'MovimientosController::movEntradaXfecha');
+    $routes->get('movSalidaXfecha', 'MovimientosController::movSalidaXfecha');
+    $routes->post('eliminar', 'MovimientosController::eliminar');
+    $routes->post('reporte_movimientos', 'MovimientosController::reportePDFmovimientos');
+    $routes->post('registrar_saldo', 'MovimientosController::registrarSaldo');
+    $routes->post('reporte_excel_movimientos', 'MovimientosController::reporteExcelMovimientos');
+
 });
 
 $routes->group('movimientos', ['filter' => 'AuthFilter'], function ($routes) {
@@ -43,6 +51,7 @@ $routes->group('destinatarios', ['filter' => 'CambioFilter'], function ($routes)
     $routes->post('editar', 'DestinatariosController::update');
     $routes->get('destinatarioxcod', 'DestinatariosController::destinatariosXcod');
     $routes->get('dtdestinatarios', 'DestinatariosController::traerDestinatarios');
+    $routes->get('busc_destinatarios', 'DestinatariosController::buscarDestinatarios');
 });
 
 $routes->group('detEntidadEmpresas', ['filter' => 'CambioFilter'], function ($routes) {

@@ -16,6 +16,11 @@
     name="keywords"
     content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard" />
   <!--end::Primary Meta Tags-->
+  <!-- Favicon para icono pestaña -->
+	<link rel="icon" href="https://grupoasiu.com/wp-content/uploads/2020/08/favicon-e1707234995480-150x150.png" sizes="32x32" />
+	<link rel="icon" href="https://grupoasiu.com/wp-content/uploads/2020/08/favicon-e1707234995480.png" sizes="192x192" />
+	<link rel="apple-touch-icon" href="https://grupoasiu.com/wp-content/uploads/2020/08/favicon-e1707234995480.png" />
+	<meta name="msapplication-TileImage" content="https://grupoasiu.com/wp-content/uploads/2020/08/favicon-e1707234995480.png" />
  <!---------------------------------------   CSS/ESTILOS  ---------------------------------------------------->
 <!-- Tipografía -->
 <link rel="stylesheet"
@@ -70,7 +75,7 @@
           </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-          <button type="button" class="btn btn-block btn-dark btn-flat" onclick="abrir_modalempresa()"><i class="fas fa-exchange-alt"></i></button>
+          <button type="button" class="btn btn-block btn-dark btn-flat" onclick="abrirModalEmpresa()"><i class="fas fa-exchange-alt"></i></button>
           <!--end::Fullscreen Toggle-->
           <!--begin::User Menu Dropdown-->
           <li class="nav-item dropdown user-menu">
@@ -94,7 +99,7 @@
                 </p>
               </li>
               <li class="user-footer">
-                <a href="#" class="btn btn-default btn-flat">PERFIL</a>
+                <a onclick="abrirModalPerfil()" class="btn btn-default btn-flat">PERFIL</a>
                 <a href="<?= base_url('login/salir') ?>" class="btn btn-default btn-flat float-end">SALIR</a>
               </li>
               <!--end::Menu Footer-->
@@ -153,8 +158,8 @@
     <!--end::Footer-->
   </div>
   <!--end::App Wrapper-->
-  <!-------------------------MODAL---------------------->
-  <div class="modal fade" id="mdlcambio" tabindex="-1" role="dialog" aria-labelledby="lbltitulo" aria-hidden="true">
+  <!-------------------------------------------------MODAL CREDENCIALES---------------------------------------------------------->
+  <div class="modal fade" id="mdlcambio" tabindex="-1" role="dialog" aria-labelledby="lbltitulo">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -163,21 +168,47 @@
         </div>
         <div class="modal-body">
           <div class="form-group mb-3">
-            <label class="control-label"><i class="fa fa-building"></i>&nbsp;Empresa</label>
+            <label class="control-label form-label"><i class="fa fa-building"></i>&nbsp;Empresa</label>
             <select id="cmbempresas" name="cmbempresas" class="form-select form-select-sm"></select>
           </div>
           <div class="form-group mb-3">
-            <label class="control-label"><i class="fa fa-industry"></i>&nbsp;Sucursal</label>
+            <label class="control-label form-label"><i class="fa fa-industry"></i>&nbsp;Sucursal</label>
             <select id="cmbsucursal" name="cmbsucursal" class="form-select form-select-sm"></select>
           </div>
           <div class="form-group mb-3">
-            <label class="control-label"><i class="fa fa-warehouse"></i>&nbsp;Almacén</label>
+            <label class="control-label form-label"><i class="fa fa-warehouse"></i>&nbsp;Almacén</label>
             <select id="cmbalmacen" name="cmbalmacen" class="form-select form-select-sm"></select>
           </div>
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" id="btnguardar" name="btnguardar" onclick="cambio_empresa()">
+          <button type="button" class="btn btn-primary" id="btnguardar" name="btnguardar" onclick="cambioEmpresa()">
+            <i class="fas fa-exchange-alt"></i>&nbsp;Cambiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+ <!-------------------------------------------------MODAL CREDENCIALES---------------------------------------------------------->
+  <div class="modal fade" id="mdlperfil" tabindex="-1" role="dialog" aria-labelledby="lbltitulo">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="lbltitulo" name="lbltitulo" class="modal-title">Configurar Perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="control-label form-label">Cambiar Nombre</label>
+            <input type="text" class="form-control" id="txtnombrep" name="txtnombrep">
+          </div>
+          <div class="form-group mb-3">
+            <label class="control-label form-label">Cambiar foto de perfil</label>
+            <input type="text" class="form-control" id="txtfotop" name="txtfotop">
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnguardar" name="btnguardar" onclick="cambioEmpresa()">
             <i class="fas fa-exchange-alt"></i>&nbsp;Cambiar</button>
         </div>
       </div>
