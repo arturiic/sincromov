@@ -54,7 +54,7 @@ class AccesoController extends BaseController
                 'n_empresa' => $accessData->nempresa,
                 'almacen'  => $accessData->descripcion_alm
             ]);
-            log_message('error', 'Sesión después de accesoalmacen: ' . print_r(session()->get(), true));
+            //log_message('error', 'Sesión después de accesoalmacen: ' . print_r(session()->get(), true));
             return redirect()->back(); // Redirige a la página anterior
         } else {
             return redirect()->to('login');

@@ -35,6 +35,7 @@ $routes->group('movimientos', ['filter' => 'AuthFilter'], function ($routes) {
 $routes->group('movimientos', ['filter' => 'AuthFilter'], function ($routes) {
     $routes->get('destinatarios', 'DestinatariosController::index');
     $routes->get('det_entidad_empresa', 'DetEntidadEmpresaController::index');
+    $routes->get('movimientos', 'MovimientosController::index');
 });
 
 $routes->group('destinatarios', ['filter' => 'CambioFilter'], function ($routes) {
@@ -42,4 +43,11 @@ $routes->group('destinatarios', ['filter' => 'CambioFilter'], function ($routes)
     $routes->post('editar', 'DestinatariosController::update');
     $routes->get('destinatarioxcod', 'DestinatariosController::destinatariosXcod');
     $routes->get('dtdestinatarios', 'DestinatariosController::traerDestinatarios');
+});
+
+$routes->group('detEntidadEmpresas', ['filter' => 'CambioFilter'], function ($routes) {
+    $routes->post('registrar', 'DetEntidadEmpresaController::insertar');
+    $routes->post('editar', 'DetEntidadEmpresaController::update');
+    $routes->get('dtDetEntidadEmpresas', 'DetEntidadEmpresaController::traerDetEntidadEmpresa');
+    $routes->get('det_entidad_empresasxcod', 'DetEntidadEmpresaController::detEntidadEmpresaXcod');
 });

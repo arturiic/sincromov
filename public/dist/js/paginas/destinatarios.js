@@ -38,7 +38,7 @@ function cargaDestinatarios()
         "columns": [
             {"data": "iddestinatario", "visible": false},
             {"data": "nombre"},           
-             {
+            {
                 "data": "estado",
                 "className": "text-center",
                 "render": function (data) {
