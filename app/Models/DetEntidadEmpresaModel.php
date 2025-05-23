@@ -12,10 +12,13 @@ class DetEntidadEmpresaModel extends Model
 
     public function traerDetEntidadEmpresa()
     {
+        $session = session(); // Accede a la sesión
+        $codempresa = $session->get('codempresa'); // Obtiene el codempresa
+
         return $this->select('det_entidad_empresa.iddet_entidad_empresa, det_entidad_empresa.descripcion, det_entidad_empresa.estado, entbanc.descripcion as entidad_bancaria, emp.descripcion as empresa')
             ->join('empresa emp', 'det_entidad_empresa.idempresa = emp.idempresa')
             ->join('entidad_bancaria entbanc', 'det_entidad_empresa.identidad_bancaria = entbanc.identidad_bancaria')
-            ->orderBy('det_entidad_empresa.descripcion', 'DESC')
+            ->where('emp.idempresa', $codempresa)
             ->findAll();
     }
     public function exists($descripcion, $id = null)
@@ -31,7 +34,7 @@ class DetEntidadEmpresaModel extends Model
     }
     public function detEntidadEmpresaXcod($cod)
     {
-        return $this->select("LPAD(idempresa, 10, '0') AS idempresa, descripcion, estado, identidad_bancaria")
+        return $this->select("descripcion, estado, identidad_bancaria")
             ->where('iddet_entidad_empresa', $cod)
             ->first();
     }

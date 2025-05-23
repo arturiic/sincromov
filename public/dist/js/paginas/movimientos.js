@@ -77,10 +77,10 @@ function buscarDestinatarios(limpiar) {
                             <span><strong>${destinatarios.nombre}</strong> <br> 
                                 
                             </span>
-                            <button class="btn btn-6 btn-yellow active btn-pill w-10 escogerDestinatario" 
+                            <button class="btn btn-6 btn-primary active btn-pill w-10 escogerDestinatario" 
                                 data-id="${destinatarios.iddestinatario}" 
                                 data-nombre="${destinatarios.nombre}">
-                                <i class="fas fa-check"></i>&nbsp;ELEGIR
+                                <i class="fas fa-check"></i>
                             </button>
                         </li>
                     `);
@@ -154,7 +154,7 @@ function registrarMovSalida() {
         '&Observacion=' + $('#txtobservacion2').val() +
         '&Fecha=' + $('#datefecha2').val() +
         '&Monto=' + $('#txtmonto2').val() +
-        '&Tipo=SALIDA' + 
+        '&Tipo=SALIDA' +
         '&Noperacion=' + $('#txtnoperacion2').val();
     $.ajax({
         type: "POST",
@@ -197,16 +197,34 @@ function obtenerMovimientos() {
             //console.log('Respuesta completa del servidor:', response);
             $('#tblmovimientos tbody').empty();
             if (Array.isArray(movimientos)) {
-                movimientos.forEach(function (movimientos) {
+                movimientos.forEach(function (mov) {
                     var fila = '<tr>' +
-                        '<td>' + movimientos.destinatario + '</td>' +
-                        '<td>' + movimientos.observacion + '</td>' +
-                        '<td>' + movimientos.fecha + '</td>' +
-                        '<td>' + movimientos.monto + '</td>' +
-                        '<td>' + movimientos.noperacion + '</td>' +
-                        '<td><button class="btn btn-2 btn-danger btn-pill w-80" onclick="eliminarEntrada(' + movimientos.idmov_finanzas + ')">' +
-                        '<i class="fa-solid fa-trash"></i></button></td>'
-                    '</tr>';
+                        '<td>' + mov.destinatario + '</td>' +
+                        '<td>' + mov.observacion + '</td>' +
+                        '<td>' + mov.fecha + '</td>' +
+                        '<td>' + mov.monto + '</td>' +
+                        '<td>' + mov.noperacion + '</td>' +
+                        '<td style="width: 1%; white-space: nowrap; padding-right: 0; text-align: center;">' +
+                        '<div class="dropdown" style="display: inline-block;">' +
+                        '<button class="btn btn-sm btn-primary dropdown-toggle" type="button" ' +
+                        'style="padding: 0.25rem 0.5rem; min-width: 30px;" ' +
+                        'id="dropdownMenuButton' + mov.idmov_finanzas + '" ' +
+                        'data-bs-toggle="dropdown" aria-expanded="false">' +
+                        '<i class="fa-solid fa-ellipsis-vertical"></i>' +
+                        '</button>' +
+                        '<ul class="dropdown-menu" ' +
+                        'style="min-width: 120px; font-size: 0.875rem; padding: 0.25rem 0;" ' +
+                        'aria-labelledby="dropdownMenuButton' + mov.idmov_finanzas + '">' +
+                        '<li><a class="dropdown-item" href="#" style="padding: 0.25rem 1rem; color:rgb(226, 230, 105);" ' +
+                        'onclick="mostrarMovSalidaX(' + mov.idmov_finanzas + ')">' +
+                        '<i class="fa-solid fa-square-plus me-2"></i>Editar</a></li>' +
+                        '<li><a class="dropdown-item" href="#" style="padding: 0.25rem 1rem; color: #dc3545;" ' +
+                        'onclick="eliminarEntrada(' + mov.idmov_finanzas + ')">' +
+                        '<i class="fa-solid fa-trash me-2"></i>Eliminar</a></li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</td>' +
+                        '</tr>';
                     $('#tblmovimientos').append(fila);
                 });
             }
@@ -231,16 +249,34 @@ function obtenerMovimientoSalida() {
             var movimientos = response[0];
             $('#tblmovimientos tbody').empty();
             if (Array.isArray(movimientos)) {
-                movimientos.forEach(function (movimientos) {
+                movimientos.forEach(function (mov) {
                     var fila = '<tr>' +
-                        '<td>' + movimientos.destinatario + '</td>' +
-                        '<td>' + movimientos.observacion + '</td>' +
-                        '<td>' + movimientos.fecha + '</td>' +
-                        '<td>' + movimientos.monto + '</td>' +
-                        '<td>' + movimientos.noperacion + '</td>' +
-                        '<td><button class="btn btn-2 btn-danger btn-pill w-80" onclick="eliminarEntrada(' + movimientos.idmov_finanzas + ')">' +
-                        '<i class="fa-solid fa-trash"></i></button></td>'
-                    '</tr>';
+                        '<td>' + mov.destinatario + '</td>' +
+                        '<td>' + mov.observacion + '</td>' +
+                        '<td>' + mov.fecha + '</td>' +
+                        '<td>' + mov.monto + '</td>' +
+                        '<td>' + mov.noperacion + '</td>' +
+                        '<td style="width: 1%; white-space: nowrap; padding-right: 0; text-align: center;">' +
+                        '<div class="dropdown" style="display: inline-block;">' +
+                        '<button class="btn btn-sm btn-primary dropdown-toggle" type="button" ' +
+                        'style="padding: 0.25rem 0.5rem; min-width: 30px;" ' +
+                        'id="dropdownMenuButton' + mov.idmov_finanzas + '" ' +
+                        'data-bs-toggle="dropdown" aria-expanded="false">' +
+                        '<i class="fa-solid fa-ellipsis-vertical"></i>' +
+                        '</button>' +
+                        '<ul class="dropdown-menu" ' +
+                        'style="min-width: 120px; font-size: 0.875rem; padding: 0.25rem 0;" ' +
+                        'aria-labelledby="dropdownMenuButton' + mov.idmov_finanzas + '">' +
+                        '<li><a class="dropdown-item" href="#" style="padding: 0.25rem 1rem; color:rgb(226, 230, 105);" ' +
+                        'onclick="mostrarMovSalidaX(' + mov.idmov_finanzas + ')">' +
+                        '<i class="fa-solid fa-square-plus me-2"></i>Editar</a></li>' +
+                        '<li><a class="dropdown-item" href="#" style="padding: 0.25rem 1rem; color: #dc3545;" ' +
+                        'onclick="eliminarEntrada(' + mov.idmov_finanzas + ')">' +
+                        '<i class="fa-solid fa-trash me-2"></i>Eliminar</a></li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</td>' +
+                        '</tr>';
                     $('#tblmovimientos').append(fila);
                 });
             }
@@ -250,7 +286,6 @@ function obtenerMovimientoSalida() {
         }
     });
 }
-
 
 function eliminarEntrada(idmov_finanzas) {
     Swal.fire({
@@ -281,9 +316,14 @@ function eliminarEntrada(idmov_finanzas) {
                             title: "REGISTRO ELIMINADO",
                             text: response.message
                         }).then(() => {
-                            // Elimina la fila manualmente del HTML (sin recargar toda la tabla)
-                            $(`button[onclick="eliminarEntrada(${idmov_finanzas})"]`)
-                                .closest("tr").remove();
+                            var tabActiva = $('.nav-tabs .active').attr('href');
+
+                            // Recargamos la tabla correspondiente
+                            if (tabActiva === '#tabentrada') {
+                                obtenerMovimientos(); // Recarga tabla de ENTRADAS
+                            } else if (tabActiva === '#tabsalida') {
+                                obtenerMovimientoSalida(); // Recarga tabla de SALIDAS
+                            }
                         });
                     }
                 },
@@ -293,7 +333,6 @@ function eliminarEntrada(idmov_finanzas) {
 }
 
 function limpiar() {
-    $('#cmbdetentempresa').val('1');
     $('#txtiddest').val('');
     $('#txtdestinatario').val('');
     $('#txtmonto').val('');
@@ -302,7 +341,6 @@ function limpiar() {
 }
 
 function limpiar2() {
-    $('#cmbdetentempresa2').val('1');
     $('#txtiddest2').val('');
     $('#txtdestinatario2').val('');
     $('#txtmonto2').val('');
@@ -317,11 +355,24 @@ function limpiarSaldo() {
 }
 
 function reportePDFmovimientos() {
+    // Obtener fechas
+    const fechaInicio = $('#dtpfechaini').val();
+    const fechaFin = $('#dtpfechafin').val();
+
+    // Validar que fecha inicio no sea mayor a fecha fin
+    if (fechaInicio > fechaFin) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'ERROR EN LA BUSQUEDA',
+            text: 'La fecha de inicio no puede ser mayor a la fecha de fin',
+        });
+        return;
+    }
     // Crear un formulario temporal
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = URL_PY + 'movimientos/reporte_movimientos', //${URL_PY}movimientos/reporte_movimientos;
-        form.target = '_blank'; // Abrir en una nueva ventana
+    form.action = URL_PY + 'movimientos/reporte_movimientos', 
+        form.target = '_blank';
 
     // Crear campos de formulario para los datos
     const inputInicio = document.createElement('input');
@@ -335,7 +386,6 @@ function reportePDFmovimientos() {
     inputFin.name = 'f';
     inputFin.value = $('#dtpfechafin').val();
     form.appendChild(inputFin);
-
 
     // Agregar el formulario al documento y enviarlo
     document.body.appendChild(form);
@@ -380,6 +430,19 @@ function registrarMovSaldo() {
 }
 
 function reporteExcelMovimientos() {
+    // Obtener fechas
+    const fechaInicio = $('#dtpfechaini').val();
+    const fechaFin = $('#dtpfechafin').val();
+
+    // Validar que fecha inicio no sea mayor a fecha fin
+    if (fechaInicio > fechaFin) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'ERROR EN LA BUSQUEDA',
+            text: 'La fecha de inicio no puede ser mayor a la fecha de fin',
+        });
+        return;
+    }
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = URL_PY + 'movimientos/reporte_excel_movimientos';
@@ -400,4 +463,63 @@ function reporteExcelMovimientos() {
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);
+}
+
+function mostrarMovSalidaX(cod) {
+    var parametros = 'cod=' + cod;
+    const url = URL_PY + 'movimientos/editar_salida';
+    //console.log(parametros);
+    $.ajax({
+        type: "GET",
+        url: url,
+        data: parametros,
+        success: function (response) {
+            //console.log(response);
+            $('#txtidmovsalida').val(cod);
+            $('#txtidoperacion').val(response[0].noperacion);
+            $('#txtmotivo').val(response[0].observacion);
+            $('#txtenviadoa').val(response[0].enviado_a);
+        }
+    });
+    $('#lbltitulo4').html('Agregar Motivo');
+    var myModal = new bootstrap.Modal(document.getElementById('mdlmotivo'));
+    myModal.show();
+}
+
+function editar() {
+    var parametros = 'observacion=' + $('#txtmotivo').val() +
+        '&cod=' + $('#txtidmovsalida').val();
+    $.ajax({
+        type: "POST",
+        url: URL_PY + 'movimientos/actualizar',
+        data: parametros,
+        success: function (response) {
+            if (response.error) {
+                Swal.fire({
+                    icon: "error",
+                    title: 'ACTUALIZAR MOVIMIENTO',
+                    text: response.error
+                });
+            }
+            else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ACTUALIZAR MOVIMIENTO',
+                    text: response.message,
+                }).then(function () {
+                    $('#mdlmotivo').modal('hide');
+                    // Verificamos qué pestaña está activa
+                    var tabActiva = $('.nav-tabs .active').attr('href');
+
+                    // Recargamos la tabla correspondiente
+                    if (tabActiva === '#tabentrada') {
+                        obtenerMovimientos(); // Recarga tabla de ENTRADAS
+                    } else if (tabActiva === '#tabsalida') {
+                        obtenerMovimientoSalida(); // Recarga tabla de SALIDAS
+                    }
+
+                });
+            }
+        }
+    });
 }

@@ -43,61 +43,180 @@
         integrity="sha256-9kPW/n5nn53j4WMRYAxe9c1rCY96Oogo/MKSVdKzPmI="
         crossorigin="anonymous" />
     <!--end::Third Party Plugin(Bootstrap Icons)-->
+    <!-- Agrega Material Icons y estilos para animación Material -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+    .fade-in-material {
+        opacity: 0;
+        transform: translateY(40px) scale(0.98);
+        animation: fadeInMaterial 0.7s cubic-bezier(.4,0,.2,1) forwards;
+    }
+    @keyframes fadeInMaterial {
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+    .material-login-card {
+        border-radius: 18px;
+        box-shadow: 0 8px 24px rgba(60,60,60,0.12);
+        padding: 2.5rem 2rem 2rem 2rem;
+        background: #fff;
+        max-width: 370px;
+        margin: 48px auto;
+    }
+    .material-login-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1976d2;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .material-form-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+        /* Aumenta el ancho de los campos */
+        max-width: 380px; /* antes 340px */
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .material-form-group label {
+        position: absolute;
+        top: 12px;
+        left: 44px;
+        color: #888;
+        font-size: 1rem;
+        pointer-events: none;
+        transition: 0.2s;
+    }
+    .material-form-group input:focus + label,
+    .material-form-group input:not(:placeholder-shown) + label,
+    .material-form-group select:focus + label,
+    .material-form-group select:not([value=""]) + label {
+        top: -10px;
+        left: 40px;
+        font-size: 0.85rem;
+        color: #1976d2;
+        background: #fff;
+        padding: 0 4px;
+    }
+    .material-form-group .material-icons {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        color: #1976d2;
+    }
+    .material-form-group input,
+    .material-form-group select {
+        width: 99%; /* antes 96% */
+        padding: 12px 12px 12px 40px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+        font-size: 1rem;
+        background: #f9f9f9;
+        transition: border-color 0.2s;
+        min-width: 260px; /* antes 240px */
+        box-sizing: border-box;
+    }
+    .material-form-group input:focus,
+    .material-form-group select:focus {
+        border-color: #1976d2;
+        background: #fff;
+    }
+    .material-login-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 1.5rem;
+    }
+    .material-btn {
+        flex: 1;
+        border: none;
+        border-radius: 8px;
+        padding: 0.7rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-decoration: none;
+    }
+    .material-btn-primary {
+        background: #1976d2;
+        color: #fff;
+    }
+    .material-btn-primary:hover {
+        background: #125ea7;
+    }
+    .material-btn-danger {
+        background: #e53935;
+        color: #fff;
+        /* Quita subrayado en enlaces */
+        text-decoration: none !important;
+    }
+    .material-btn-danger:hover {
+        background: #b71c1c;
+        text-decoration: none !important;
+    }
+    @media (max-width: 480px) {
+        .material-login-card {
+            padding: 1.5rem 0.5rem 1.5rem 0.5rem;
+        }
+        .material-form-group input,
+        .material-form-group select {
+            min-width: 0;
+            width: 100%;
+        }
+    }
+</style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
 
 <body class="login-page bg-body-secondary">
-    <div class="login-box">
-        <div class="card card-outline card-primary">
-            <div class="card-header">
-                <a
-                    href="https://grupoasiu.com/"
-                    class="link-dark text-center text-decoration-none link-offset-2 link-opacity-100 link-opacity-50-hover">
-                    <h1 class="mb-0"><b>Grupo </b>ASIU</h1>
-                </a>
+    <div class="fade-in-material">
+        <div class="material-login-card">
+            <div class="material-login-title">
+                Grupo <b>ASIU</b>
             </div>
-            <div class="card-body login-card-body">
-                <div class="input-group mb-3">
-                    <select class="form-select form-select-sm" id="cmbusuario" name="cmbusuario">
+            <!-- Elimina el form para evitar submit por GET y respeta el JS -->
+            <div id="loginForm" autocomplete="off">
+                <div class="material-form-group">
+                    <span class="material-icons">person</span>
+                    <select id="cmbusuario" name="cmbusuario" required>
                         <?php foreach ($usuarios as $usuariosreg): ?>
                             <option value="<?= esc($usuariosreg['idusuarios']); ?>">
                                 <?= esc($usuariosreg['usuario']); ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <div class="input-group-append">
-                        <span class="input-group-text">
-                            <i class="fas fa-user"></i>
-                        </span>
-                    </div>
+                    <label for="cmbusuario">Usuario</label>
                 </div>
-                <div class="input-group mb-3">
-                    <input type="password" class="form-control form-control-sm" placeholder="Password"
-                        name="txtpassword" id="txtpassword">
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-lock"></span>
-                        </div>
-                    </div>
+                <div class="material-form-group" style="position: relative;">
+                    <span class="material-icons">lock</span>
+                    <input type="password" id="txtpassword" name="txtpassword" placeholder=" " required autocomplete="current-password" style="padding-right:44px;">
+                    <label for="txtpassword">Contraseña</label>
+                    <!-- OJITO PARA MOSTRAR/OCULTAR CONTRASEÑA -->
+                    <span style="position:absolute;top:10px;right:10px;cursor:pointer;z-index:2;">
+                        <a href="#" class="toggle-password" title="Mostrar Contraseña" tabindex="-1">
+                            <!-- Icono de ojo abierto -->
+                            <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;">
+                                <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                            </svg>
+                            <!-- Icono de ojo tachado (oculto por defecto) -->
+                            <svg id="eye-closed" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;vertical-align:middle;">
+                                <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" />
+                                <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </a>
+                    </span>
                 </div>
-                <!--begin::Row-->
-                <!-- /.col -->
-                <div class="row">
-                    <div class="col-6">
-                        <button onclick="loguear_sistema()" class="btn btn-sm w-100 btn-primary">INGRESAR</button>
-                    </div>
-                    <div class="col-6">
-                        <a href="https://grupoasiu.com/" class="btn btn-sm w-100 btn-danger">SALIR</a>
-                    </div>
-
-                    <!-- /.col -->
+                <div class="material-login-actions">
+                    <button type="button" onclick="loguear_sistema()" class="material-btn material-btn-primary">INGRESAR</button>
+                    <a href="https://grupoasiu.com/" class="material-btn material-btn-danger" style="text-align:center;line-height:2.2;">SALIR</a>
                 </div>
-                <!--end::Row-->
-                </form>
-                <!-- /.social-auth-links -->
             </div>
-            <!-- /.login-card-body -->
         </div>
     </div>
     <!-- /.login-box -->
@@ -148,6 +267,26 @@
 	<script src="<?= base_url('public/dist/js/paginas/login.js') ?>" defer></script>
     <!--end::OverlayScrollbars Configure-->
     <!--end::Script-->
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('txtpassword');
+    const toggle = document.querySelector('.toggle-password');
+    const eyeOpen = toggle.querySelector('#eye-open');
+    const eyeClosed = toggle.querySelector('#eye-closed');
+    toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeOpen.style.display = 'none';
+            eyeClosed.style.display = '';
+        } else {
+            passwordInput.type = 'password';
+            eyeOpen.style.display = '';
+            eyeClosed.style.display = 'none';
+        }
+    });
+});
+</script>
 </body>
 <!--end::Body-->
 </html>

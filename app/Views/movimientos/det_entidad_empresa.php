@@ -50,38 +50,20 @@ $this->extend('dashboard/template.php'); ?>
                     </div>
                 </div>
                 <div class="form-group row mb-3">
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <label class="form-label">Estado</label>
                     <select class="form-select" id="cmbestado" name="cmbestado">
                         <option value="ACTIVO">ACTIVO</option>
                         <option value="INACTIVO">INACTIVO</option>
                     </select>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-6">
                     <label class="form-label">Entidad Bancaria</label>
                     <select class="form-select" id="cmbent_bancaria" name="cmbent_bancaria">
                         <option value="1">BCP</option>
                     </select>
                 </div>
-                <div class="col-lg-4">
-                    <label class="form-label">Empresa</label>
-                    <select class="form-select" id="cmbempresa" name="cmbempresa">
-                            <option value="0000000001">ASIU SELVA SAC</option>
-                            <option value="0000000002">ZOE COSTA SAC</option>
-                            <option value="0000000003">ASIU COSTA SAC</option>
-                            <option value="0000000004">CHIN NEGOCIOS Y TRANSPORTES SAC</option>
-                            <option value="0000000005">ASIU E.I.R.L.</option>
-                            <option value="0000000006">CHIN E.I.R.L.</option>
-                            <option value="0000000007">CHIN SELVA E.I.R.L.</option>
-                            <option value="0000000008">SEGUNDO AGUSTIN CHAMBERGO CHUNGA</option>
-                            <option value="0000000009">TRANSPORTES Y NEGOCIOS FOX S.A.C.</option>
-                            <option value="0000000010">MAGALY</option>
-                            <option value="0000000011">ICAMAR S.A.C.</option>
-                            <option value="0000000012">CHAS CREATIVITY S.A.C.</option>
-                    </select>
-                </div>
             </div>
-
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="btnregistrar" name="btnregistrar" onclick="registrar()">

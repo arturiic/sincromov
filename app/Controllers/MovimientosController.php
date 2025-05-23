@@ -30,9 +30,18 @@ class MovimientosController extends Controller
 
         $model = new MovimientosModel();
 
-        try {
-            foreach ($movimientos as $mov) {
-                $model->registrarSincroMov(
+        $resultados = [
+            'registrados' => [],
+            'omitidos' => [],
+            'errores' => []
+        ];
+
+        $todosExitosos = true;
+        $algunExitoso = false;
+
+        foreach ($movimientos as $mov) {
+            try {
+                $resultado = $model->registrarSincroMov(
                     $idempresa,
                     $mov['nombre_depositante'],
                     $mov['observacion'],
@@ -41,18 +50,57 @@ class MovimientosController extends Controller
                     $mov['moneda'],
                     $mov['noperacion']
                 );
+
+                if ($resultado['resultado'] === 'OK') {
+                    $resultados['registrados'][] = [
+                        'noperacion' => $mov['noperacion'],
+                        'mensaje' => $resultado['mensaje']
+                    ];
+                    $algunExitoso = true;
+                } elseif ($resultado['resultado'] === 'SKIP') {
+                    $resultados['omitidos'][] = [
+                        'noperacion' => $mov['noperacion'],
+                        'mensaje' => $resultado['mensaje']
+                    ];
+                    $todosExitosos = false;
+                } else {
+                    $resultados['errores'][] = [
+                        'noperacion' => $mov['noperacion'],
+                        'mensaje' => $resultado['mensaje']
+                    ];
+                    $todosExitosos = false;
+                }
+            } catch (\Exception $e) {
+                $resultados['errores'][] = [
+                    'noperacion' => $mov['noperacion'],
+                    'mensaje' => $e->getMessage()
+                ];
+                $todosExitosos = false;
             }
-            return $this->response->setJSON([
-                'status' => 'OK',
-                'message' => 'Movimientos registrados correctamente'
-            ]);
-        } catch (\Exception $e) {
-            // Manejo simple de cualquier otro error
-            return $this->response->setJSON([
-                'status' => 'ERROR',
-                'message' => 'Los movientos ya fueron registrados'
-            ]);
         }
+
+        if ($todosExitosos && count($resultados['registrados']) === count($movimientos)) {
+            $status = 'OK';
+            $mensajeGeneral = 'Todos los movimientos fueron registrados correctamente';
+        } elseif ($algunExitoso) {
+            $status = 'PARTIAL';
+            $mensajeGeneral = 'Algunos movimientos fueron registrados, otros fueron omitidos o fallaron';
+        } else {
+            $status = 'ERROR';
+            $mensajeGeneral = 'Ningún movimiento fue registrado (todos omitidos o fallaron)';
+        }
+
+        return $this->response->setJSON([
+            'status' => $status,
+            'message' => $mensajeGeneral,
+            'details' => $resultados,
+            'logs' => [
+                'registrados_count' => count($resultados['registrados']),
+                'omitidos_count' => count($resultados['omitidos']),
+                'errores_count' => count($resultados['errores']),
+                'summary' => "Registrados: " . count($resultados['registrados']) . ", Omitidos: " . count($resultados['omitidos']) . ", Errores: " . count($resultados['errores'])
+            ]
+        ]);
     }
 
     public function registrarMovimientos()
@@ -274,47 +322,61 @@ class MovimientosController extends Controller
         $pdf->SetTextColor(0, 0, 0); // texto negro
         $pdf->SetFont('Helvetica', 'B', 7);
 
-        //ENCABEZADOS
+        //ENCABEZADOS (agregamos la columna SALDO)
         $pdf->Cell(15, 6, 'FECHA', 1, 0, 'C', true);
-        $pdf->Cell(79, 6, 'DESTINATARIO', 1, 0, 'C', true);
+        $pdf->Cell(60, 6, 'DESTINATARIO', 1, 0, 'C', true);
         $pdf->Cell(65, 6, 'CUENTA', 1, 0, 'C', true);
         $pdf->Cell(55, 6, 'OBSERVACION', 1, 0, 'C', true);
         $pdf->Cell(23, 6, 'NRO. OPERACION', 1, 0, 'C', true);
         $pdf->Cell(19, 6, 'ENTRADA', 1, 0, 'C', true);
-        $pdf->Cell(19, 6, 'SALIDA', 1, 1, 'C', true);
+        $pdf->Cell(19, 6, 'SALIDA', 1, 0, 'C', true);
+        $pdf->Cell(19, 6, 'SALDO', 1, 1, 'C', true);
+
         // Inicializar acumuladores
         $entra = 0;
         $salid = 0;
-        $total = 0;
+        $saldo_acumulado = 0; // Nuevo acumulador para el saldo
+
         foreach ($movimientos as $movimiento) {
             $pdf->SetFont('Helvetica', '', 7);
+
             // Comprobar si es tipo 'SALDO' para poner fondo amarillo
             if ($movimiento['tipo'] == 'SALDO') {
                 $pdf->SetFillColor(255, 249, 196); // color de fondo amarillo
             } else {
                 $pdf->SetFillColor(255, 255, 255); // fondo blanco para otros tipos
             }
-            $pdf->Cell(15, 4, $movimiento['fecha'], 1, 0, 'C', true);
-            $pdf->Cell(79, 4, $movimiento['destinatario'], 1, 0, 'C', true);
+
+            // Actualizar saldo acumulado (entradas suman, salidas restan)
+            $saldo_acumulado += $movimiento['entrada'] - $movimiento['salida'];
+
+            $fecha_formateada = date('d-m-Y', strtotime($movimiento['fecha']));
+
+            $pdf->Cell(15, 4, $fecha_formateada, 1, 0, 'C', true);
+            $pdf->Cell(60, 4, $movimiento['destinatario'], 1, 0, 'C', true);
             $pdf->Cell(65, 4, $movimiento['cuenta'], 1, 0, 'C', true);
             $pdf->Cell(55, 4, $movimiento['observacion'], 1, 0, 'C', true);
             $pdf->Cell(23, 4, $movimiento['noperacion'], 1, 0, 'C', true);
             $pdf->Cell(19, 4, $movimiento['entrada'], 1, 0, 'R', true);
-            $pdf->Cell(19, 4, $movimiento['salida'], 1, 1, 'R', true);
+            $pdf->Cell(19, 4, $movimiento['salida'], 1, 0, 'R', true);
+            $pdf->Cell(19, 4, number_format($saldo_acumulado, 2), 1, 1, 'R', true);
 
             // Acumular totales
             $entra += $movimiento['entrada'];
-            $salid  += $movimiento['salida'];
-            $total = $entra - $salid;
+            $salid += $movimiento['salida'];
         }
-        // Fila de totales
+
+        $total = $entra - $salid;
         $pdf->SetFillColor(200, 220, 255);
         $pdf->SetFont('Helvetica', 'B', 7);
-        $pdf->Cell(237, 4, '', 0, 0, 'R'); // 15+40+65+45+49+23 = 237
+        $pdf->Cell(218, 4, '', 0, 0, 'R'); 
         $pdf->Cell(19, 4, number_format($entra, 2), 1, 0, 'R');
-        $pdf->Cell(19, 4, number_format($salid, 2), 1, 1, 'R');
-        $pdf->Cell(237, 4, 'TOTAL', 0, 0, 'R');
-        $pdf->Cell(38, 4, number_format($total, 2), 1, 0, 'C', true);
+        $pdf->Cell(19, 4, number_format($salid, 2), 1, 0, 'R');
+        $pdf->Cell(19, 4, number_format($total, 2), 1, 1, 'R'); // Mostrar el total en la columna SALDO
+
+        $pdf->Cell(218, 4, 'TOTAL', 0, 0, 'R');
+        $pdf->Cell(57, 4, number_format($total, 2), 1, 0, 'C', true); // Ajustado para 3 celdas
+
         // Establecer los encabezados para la respuesta PDF
         header('Content-Type: application/pdf');
         header('Content-Disposition: inline; filename="reporte.pdf"');
@@ -379,122 +441,159 @@ class MovimientosController extends Controller
     }
 
     public function reporteExcelMovimientos()
-{
-    $inicio = $this->request->getPost('i');
-    $fin = $this->request->getPost('f');
-    $codempresa = session()->get('codempresa');
-    $nombreusuario = session()->get('nombreusuariocorto');
-    $nombrempresa = session()->get('nempresa');
+    {
+        $inicio = $this->request->getPost('i');
+        $fin = $this->request->getPost('f');
+        $codempresa = session()->get('codempresa');
+        $nombreusuario = session()->get('nombreusuariocorto');
+        $nombrempresa = session()->get('nempresa');
 
-    $MovimientosModel = new MovimientosModel();
-    $movimientos = $MovimientosModel->movimientosXfecha($inicio, $fin, $codempresa);
+        $MovimientosModel = new MovimientosModel();
+        $movimientos = $MovimientosModel->movimientosXfecha($inicio, $fin, $codempresa);
 
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-    // Estilos
-    $styleTitle = [
-        'font' => ['bold' => true, 'size' => 13],
-        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
-    ];
+        // Estilos
+        $styleTitle = [
+            'font' => ['bold' => true, 'size' => 13],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+        ];
 
-    $styleHeader = [
-        'font' => ['bold' => true],
-        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
-        'fill' => [
-            'fillType' => Fill::FILL_SOLID,
-            'startColor' => ['rgb' => 'BDD7EE'] // Azul claro
-        ],
-        'borders' => [
-            'allBorders' => ['borderStyle' => Border::BORDER_THIN]
-        ]
-    ];
+        $styleHeader = [
+            'font' => ['bold' => true],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'BDD7EE'] // Azul claro
+            ],
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN]
+            ]
+        ];
 
-    $styleTotal = [
-        'font' => ['bold' => true],
-        'fill' => [
-            'fillType' => Fill::FILL_SOLID,
-            'startColor' => ['rgb' => 'D9E1F2']
-        ]
-    ];
-    $styleSaldo = [
-    'fill' => [
-        'fillType' => Fill::FILL_SOLID,
-        'startColor' => ['rgb' => 'FFFACD'], // amarillo
-    ]
-];
+        $styleTotal = [
+            'font' => ['bold' => true],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'D9E1F2']
+            ]
+        ];
+        $styleSaldo = [
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'FFFACD'], // amarillo
+            ]
+        ];
 
-    // Título principal centrado
-    $sheet->mergeCells('A1:G1');
-    $sheet->setCellValue('A1', 'REPORTE DE MOVIMIENTOS DEL: ' . date('d/m/Y', strtotime($inicio)) . ' AL: ' . date('d/m/Y', strtotime($fin)));
-    $sheet->getStyle('A1')->applyFromArray($styleTitle);
+        // Título principal centrado
+        $sheet->mergeCells('A1:H1');
+        $sheet->setCellValue('A1', 'REPORTE DE MOVIMIENTOS DEL: ' . date('d/m/Y', strtotime($inicio)) . ' AL: ' . date('d/m/Y', strtotime($fin)));
+        $sheet->getStyle('A1')->applyFromArray($styleTitle);
 
-    // Empresa y usuario
-    $sheet->mergeCells('A2:C2');
-    $sheet->setCellValue('A2', 'EMPRESA: ' . $nombrempresa);
-    $sheet->setCellValue('G2', 'Fecha: ' . date('d/m/Y'));
-    $sheet->setCellValue('G3', 'Usuario: ' . $nombreusuario);
+        // Empresa y usuario
+        $sheet->mergeCells('A2:C2');
+        $sheet->setCellValue('A2', 'EMPRESA: ' . $nombrempresa);
+        $sheet->setCellValue('H2', 'Fecha: ' . date('d/m/Y'));
+        $sheet->setCellValue('H3', 'Usuario: ' . $nombreusuario);
 
-    // Encabezados
-    $sheet->setCellValue('A5', 'FECHA');
-    $sheet->setCellValue('B5', 'DESTINATARIO');
-    $sheet->setCellValue('C5', 'CUENTA');
-    $sheet->setCellValue('D5', 'OBSERVACION');
-    $sheet->setCellValue('E5', 'NRO. OPERACION');
-    $sheet->setCellValue('F5', 'ENTRADA');
-    $sheet->setCellValue('G5', 'SALIDA');
-    $sheet->getStyle('A5:G5')->applyFromArray($styleHeader);
+        // Encabezados
+        $sheet->setCellValue('A5', 'FECHA');
+        $sheet->setCellValue('B5', 'DESTINATARIO');
+        $sheet->setCellValue('C5', 'CUENTA');
+        $sheet->setCellValue('D5', 'OBSERVACION');
+        $sheet->setCellValue('E5', 'NRO. OPERACION');
+        $sheet->setCellValue('F5', 'ENTRADA');
+        $sheet->setCellValue('G5', 'SALIDA');
+        $sheet->setCellValue('H5', 'SALDO');
+        $sheet->getStyle('A5:H5')->applyFromArray($styleHeader);
 
-    // Datos
-    $row = 6;
-    $totalEntrada = 0;
-    $totalSalida = 0;
+        // Datos
+        $row = 6;
+        $totalEntrada = 0;
+        $totalSalida = 0;
+        $saldoAcumulado = 0;
 
-    foreach ($movimientos as $mov) {
-        $sheet->setCellValue('A' . $row, $mov['fecha']);
-        $sheet->setCellValue('B' . $row, $mov['destinatario']);
-        $sheet->setCellValue('C' . $row, $mov['cuenta']);
-        $sheet->setCellValue('D' . $row, $mov['observacion']);
-        $sheet->setCellValue('E' . $row, $mov['noperacion']);
-        $sheet->setCellValue('F' . $row, $mov['entrada']);
-        $sheet->setCellValue('G' . $row, $mov['salida']);
-        
-        // Aplicar color de fondo amarillo si el tipo es SALDO
-        if ($mov['tipo'] === 'SALDO') {
-        $sheet->getStyle("A$row:G$row")->applyFromArray($styleSaldo);
+        foreach ($movimientos as $mov) {
+            $saldoAcumulado += $mov['entrada'] - $mov['salida'];
+
+            $sheet->setCellValue('A' . $row, $mov['fecha']);
+            $sheet->setCellValue('B' . $row, $mov['destinatario']);
+            $sheet->setCellValue('C' . $row, $mov['cuenta']);
+            $sheet->setCellValue('D' . $row, $mov['observacion']);
+            $sheet->setCellValue('E' . $row, $mov['noperacion']);
+            $sheet->setCellValue('F' . $row, $mov['entrada']);
+            $sheet->setCellValue('G' . $row, $mov['salida']);
+            $sheet->setCellValue('H' . $row, $saldoAcumulado);
+
+            // Aplicar color de fondo amarillo si el tipo es SALDO
+            if ($mov['tipo'] === 'SALDO') {
+                $sheet->getStyle("A$row:H$row")->applyFromArray($styleSaldo);
+            }
+
+            // Bordes para cada fila
+            $sheet->getStyle("A{$row}:H{$row}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+            $totalEntrada += $mov['entrada'];
+            $totalSalida += $mov['salida'];
+            $row++;
+        }
+
+        // Totales
+        $totalGeneral = $totalEntrada - $totalSalida;
+        $sheet->setCellValue('E' . $row, 'TOTAL');
+        $sheet->setCellValue('F' . $row, $totalEntrada);
+        $sheet->setCellValue('G' . $row, $totalSalida);
+        $sheet->setCellValue('H' . $row, $totalGeneral);
+        $sheet->getStyle("E{$row}:H{$row}")->applyFromArray($styleTotal);
+
+        // Formato numérico
+        $sheet->getStyle("F6:F{$row}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("G6:G{$row}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("H6:H{$row}")->getNumberFormat()->setFormatCode('#,##0.00');
+
+        // Ajustar ancho
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Salida
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="reporte_movimientos.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
     }
 
-        // Bordes para cada fila
-        $sheet->getStyle("A{$row}:G{$row}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
-
-        $totalEntrada += $mov['entrada'];
-        $totalSalida += $mov['salida'];
-        $row++;
+    public function movimientosXcod()
+    {
+        $movModel = new MovimientosModel();
+        $cod = $this->request->getGet('cod');
+        $data = $movModel->movimientosXcod($cod);
+        return $this->response->setJSON([$data]);
     }
 
-    // Totales
-    $sheet->setCellValue('E' . $row, 'TOTAL');
-    $sheet->setCellValue('F' . $row, $totalEntrada);
-    $sheet->setCellValue('G' . $row, $totalSalida);
-    $sheet->getStyle("E{$row}:G{$row}")->applyFromArray($styleTotal);
+    public function update()
+    {
+        $model = new MovimientosModel();
+        $idmov_finanzas = $this->request->getPost('cod'); // Obtener ID del movimiento a actualizar
+        $observacion = $this->request->getPost('observacion');
 
-    // Formato numérico
-    $sheet->getStyle("F6:F{$row}")->getNumberFormat()->setFormatCode('#,##0.00');
-    $sheet->getStyle("G6:G{$row}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $data = [
+            'observacion' => $observacion
+        ];
 
-    // Ajustar ancho
-    foreach (range('A', 'G') as $col) {
-        $sheet->getColumnDimension($col)->setAutoSize(true);
+        try {
+            // Llama al método de actualización
+            if ($model->update($idmov_finanzas, $data)) {
+                return $this->response->setJSON(['success' => true, 'message' => 'Movimiento actualizado.']);
+            } else {
+                return $this->response->setJSON(['error' => 'Movimientos no encontrado.']);
+            }
+        } catch (\Exception $e) {
+            return $this->response->setJSON(['error' => 'Ocurrió un error al actualizar el movimiento: ' . $e->getMessage()]);
+        }
     }
-
-    // Salida
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment;filename="reporte_movimientos.xlsx"');
-    header('Cache-Control: max-age=0');
-
-    $writer = new Xlsx($spreadsheet);
-    $writer->save('php://output');
-    exit;
-}
-
 }

@@ -27,7 +27,7 @@ $routes->group('cambio', ['filter' => 'CambioFilter'], function ($routes) {
     $routes->post('ingresar', 'AccesoController::accesoalmacen');
 });
 //RUTAS PARA EL PADRE MOVIMIENTOS
-$routes->group('movimientos', ['filter' => 'AuthFilter'], function ($routes) {
+$routes->group('movimientos',['filter' => 'AuthFilter'], function ($routes) {
     $routes->get('sincro', 'SincromovimientosController::sincronizacion_movimientos');
     $routes->post('insertar_sincromov', 'MovimientosController::guardarMovimientos');
     $routes->post('registrar_xml', 'MovimientosController::registrarMovimientos');
@@ -37,7 +37,8 @@ $routes->group('movimientos', ['filter' => 'AuthFilter'], function ($routes) {
     $routes->post('reporte_movimientos', 'MovimientosController::reportePDFmovimientos');
     $routes->post('registrar_saldo', 'MovimientosController::registrarSaldo');
     $routes->post('reporte_excel_movimientos', 'MovimientosController::reporteExcelMovimientos');
-
+    $routes->get('editar_salida', 'MovimientosController::movimientosXcod');
+    $routes->post('actualizar', 'MovimientosController::update');
 });
 
 $routes->group('movimientos', ['filter' => 'AuthFilter'], function ($routes) {
@@ -59,4 +60,8 @@ $routes->group('detEntidadEmpresas', ['filter' => 'CambioFilter'], function ($ro
     $routes->post('editar', 'DetEntidadEmpresaController::update');
     $routes->get('dtDetEntidadEmpresas', 'DetEntidadEmpresaController::traerDetEntidadEmpresa');
     $routes->get('det_entidad_empresasxcod', 'DetEntidadEmpresaController::detEntidadEmpresaXcod');
+});
+
+$routes->group('personal', ['filter' => 'CambioFilter'], function ($routes) {
+    $routes->get('personalxcod', 'PersonalController::nombreFotitoXcod');
 });

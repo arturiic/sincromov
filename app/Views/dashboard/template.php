@@ -21,7 +21,7 @@
 	<link rel="icon" href="https://grupoasiu.com/wp-content/uploads/2020/08/favicon-e1707234995480.png" sizes="192x192" />
 	<link rel="apple-touch-icon" href="https://grupoasiu.com/wp-content/uploads/2020/08/favicon-e1707234995480.png" />
 	<meta name="msapplication-TileImage" content="https://grupoasiu.com/wp-content/uploads/2020/08/favicon-e1707234995480.png" />
- <!---------------------------------------   CSS/ESTILOS  ---------------------------------------------------->
+<!---------------------------------------   CSS/ESTILOS  ---------------------------------------------------->
 <!-- Tipografía -->
 <link rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
@@ -41,16 +41,15 @@
   href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css"
   integrity="sha256-tZHrRjVqNSRyWg2wbppGnT833E/Ys0DHWGwT04GiqQg="
   crossorigin="anonymous" />
+<!-- Plugin: DataTables -->
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.bootstrap5.min.css"> <!-- Añadido -->
 <!-- Plugin: ApexCharts -->
 <link rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css"
   integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
   crossorigin="anonymous" />
-<!-- Plugin: DataTables -->
-<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-<!-- Local: DataTables extendido (solo uno, ya estaba duplicado) -->
-<link href="<?= base_url('public/dist/libs/datatables/datatables.min.css') ?>" rel="stylesheet">
 <!-- Plugin: SweetAlert2 -->
 <link href="<?= base_url('public/dist/libs/sweetalert2/dist/sweetalert2.css') ?>" rel="stylesheet" />
 <!-- Estilos personalizados / AdminLTE -->
@@ -188,8 +187,8 @@
       </div>
     </div>
   </div>
- <!-------------------------------------------------MODAL CREDENCIALES---------------------------------------------------------->
-  <div class="modal fade" id="mdlperfil" tabindex="-1" role="dialog" aria-labelledby="lbltitulo">
+ <!-------------------------------------------------MODAL PERSONAL---------------------------------------------------------->
+  <div class="modal fade" id="mdlpersonal" tabindex="-1" role="dialog" aria-labelledby="lbltitulo">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -198,6 +197,7 @@
         </div>
         <div class="modal-body">
           <div class="form-group mb-3">
+            <input type="hidden" id="txtidp" name="txtidp">
             <label class="control-label form-label">Cambiar Nombre</label>
             <input type="text" class="form-control" id="txtnombrep" name="txtnombrep">
           </div>
@@ -205,16 +205,20 @@
             <label class="control-label form-label">Cambiar foto de perfil</label>
             <input type="text" class="form-control" id="txtfotop" name="txtfotop">
           </div>
+          <div class="form-group mb-3">
+            <label class="control-label form-label">Cambiar Correo</label>
+            <input type="text" class="form-control" id="txtcorreo" name="txtcorreo">
+          </div>
         </div>
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" id="btnguardar" name="btnguardar" onclick="cambioEmpresa()">
+          <button type="button" class="btn btn-primary" id="btnguardar" name="btnguardar" onclick="update()">
             <i class="fas fa-exchange-alt"></i>&nbsp;Cambiar</button>
         </div>
       </div>
     </div>
   </div>
-  <!---------------------------------------   SCRIPTS   ---------------------------------------------------->
+<!---------------------------------------   SCRIPTS   ---------------------------------------------------->
 <!-- Variables JS (deben ir antes que cualquier otro script que las use) -->
 <script>
   var URL_PY = "<?= base_url() ?>";
@@ -222,7 +226,7 @@
 <script>
   var codalmacen = "<?= session()->get('codigoalmacen') ?? 'NL' ?>";
 </script>
-<!-- jQuery (debe cargarse antes que cualquier plugin que lo requiera, como DataTables o jsGrid) -->
+<!-- jQuery -->
 <script src="<?= base_url('public/dist/libs/jquery/jquery-3.7.1.min.js') ?>"></script>
 <!-- Popper.js (necesario para Bootstrap) -->
 <script
@@ -241,10 +245,10 @@
   crossorigin="anonymous"></script>
 <!-- DataTables Core -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<!-- DataTables Responsive Extension -->
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <!-- DataTables Bootstrap 5 Integration -->
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!-- DataTables Responsive Extension -->
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <!-- SweetAlert2 -->
 <script src="<?= base_url('public/dist/libs/sweetalert2/dist/sweetalert2.js') ?>"></script>
 <!-- AdminLTE y JS personalizados -->
@@ -255,5 +259,4 @@
 <!---------------------------------------    SCRIPTS   ---------------------------------------------------->
 </body>
 <!--end::Body-->
-
 </html>

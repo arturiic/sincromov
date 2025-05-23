@@ -21,7 +21,7 @@ class DetEntidadEmpresaController extends Controller
         $descripcion = $this->request->getPost('descripcion');
         $estado = $this->request->getPost('estado');
         $identidad_bancaria = $this->request->getPost('identidad_bancaria');
-        $idempresa = $this->request->getPost('idempresa');
+        $idempresa = session('codempresa');
 
         // Validar la descripcion no sea nulo o vacío
         if (empty($descripcion)) {
@@ -60,14 +60,11 @@ class DetEntidadEmpresaController extends Controller
         $descripcion = $this->request->getPost('descripcion');
         $estado = $this->request->getPost('estado');
         $identidad_bancaria = $this->request->getPost('identidad_bancaria');
-        $idempresa = $this->request->getPost('idempresa');
-        //$idempresa = ltrim($idempresa, '0'); // Elimina ceros a la izquierda
 
         $data = [
             'descripcion' => $descripcion,
             'estado' => $estado,
-            'identidad_bancaria' => $identidad_bancaria,
-            'idempresa' => $idempresa
+            'identidad_bancaria' => $identidad_bancaria
         ];
         // Validar la descripcion no sea nulo o vacío
         if (empty($descripcion)) {

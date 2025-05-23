@@ -1,19 +1,21 @@
 <?php
+
 namespace App\Controllers;
+
 use CodeIgniter\Controller;
 
 class SincroMovimientosController extends Controller
 {
     public function index()
-  {
-    return view('configuracion/sincromovimientos');
-  }
-public function sincronizacion_movimientos()
+    {
+        return view('configuracion/sincromovimientos');
+    }
+    public function sincronizacion_movimientos()
     {
         // Aumentar el tiempo de ejecución para operaciones IMAP
         set_time_limit(300); // 5 minutos
 
-        //VARIABLE NOMBRE DE LA EMPRESA
+        // VARIABLE NOMBRE DE LA EMPRESA
         $nempresa = session('nempresa');
 
         // Configuración del servidor IMAP
@@ -21,9 +23,11 @@ public function sincronizacion_movimientos()
         $username = 'yulyasiu@grupoasiu.com';
         $password = 'margot2405';
         $remitente_buscado = 'notificaciones@notificacionesbcp.com.pe';
-        // Configuración de fecha (formato: DD-MMM-YYYY, ej. "22-Apr-2025")
-        $fecha_busqueda = $this->request->getGet('fecha');
-        //$fecha_busqueda = isset($_GET['fecha']) ? $_GET['fecha'] : date('d-M-Y'); // Usa hoy por defecto
+
+        // Obtener fechas desde la solicitud
+        $fecha_inicio = $this->request->getGet('desde');
+        $fecha_fin = $this->request->getGet('hasta') ?: $fecha_inicio;
+
         // Conectar al servidor IMAP con manejo de errores
         try {
             $inbox = imap_open($hostname, $username, $password);
@@ -33,12 +37,12 @@ public function sincronizacion_movimientos()
         } catch (\Exception $e) {
             die(json_encode(['error' => $e->getMessage()]));
         }
+
         // Procesamiento principal
         try {
             $data = [];
-
-            // Criterio de búsqueda para un día específico
-            $criterio = 'FROM "' . $remitente_buscado . '" ON "' . $fecha_busqueda . '"';
+            // Criterio de búsqueda para un rango de fechas
+            $criterio = 'FROM "' . $remitente_buscado . '" SINCE "' . $fecha_inicio . '" BEFORE "' . date('Y-m-d', strtotime($fecha_fin . ' +1 day')) . '"';
 
             // Buscar en bandeja de entrada
             $entrada = buscarMensajes($inbox, $criterio);
@@ -49,6 +53,7 @@ public function sincronizacion_movimientos()
                     $data[] = $mensaje;
                 }
             }
+
             // Buscar en posibles carpetas de spam
             $spam_folders = ['spam'];
             foreach ($spam_folders as $folder) {
@@ -65,19 +70,36 @@ public function sincronizacion_movimientos()
                     imap_reopen($inbox, $hostname);
                 }
             }
+
             // Cerrar conexión
             imap_close($inbox);
-            // --- Respuesta JSON ---
-            return $this->response->setJSON([
-                //'success' => true,
-                //'fecha_busqueda' => $fecha_busqueda,
-                //'cantidad' => count($data),
-                'data' => $data // Ya están en UTF-8 por extraerDatosHtml()
-            ]);
+
+            array_walk($data, function (&$item) {
+                foreach ($item as $key => $value) {
+                    if (is_string($value)) {
+                        // Eliminar caracteres no UTF-8
+                        $item[$key] = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                        // Opcional: eliminar caracteres especiales problemáticos
+                        $item[$key] = preg_replace('/[^\x20-\x7E]/u', '', $item[$key]);
+                    }
+                }
+            });
+
+            // Forzar la codificación UTF-8 en la respuesta
+            return $this->response
+                ->setContentType('application/json; charset=UTF-8')
+                ->setJSON([
+                    'data' => $data,
+                    //'fecha_inicio' => $fecha_inicio,
+                    //'fecha_fin' => $fecha_fin,
+                    //'cantidad' => count($data)
+                ]);
         } catch (\Exception $e) {
-            return $this->response->setJSON([
-                'error' => $e->getMessage()
-            ]);
+            return $this->response
+                ->setContentType('application/json; charset=UTF-8')
+                ->setJSON([
+                    'error' => $e->getMessage()
+                ]);
         }
     }
 
@@ -303,6 +325,12 @@ function extraerDatosHtml($cuerpo, $asunto = null)
         $titulo = trim($m[1]);
         $operacion = 'Transferencia Telecrédito'; // Puedes ajustar esto según necesites
         $datos['titulo'] = "$titulo - $operacion";
+    } elseif (preg_match('/Estimados\s*<b>([^<]+),<\/b>/i', $cuerpo, $m) && isset($m[1])) {
+        $titulo = trim($m[1]);
+        if (preg_match('/Operaci[^\w]*n realizada\s*<\/td>\s*<td[^>]*>\s*<b>([^<]+)<\/b>/i', $cuerpo, $op) && isset($op[1])) {
+            $operacion = trim($op[1]);
+        }
+        $datos['titulo'] = "$titulo - $operacion";
     } elseif (preg_match('/\*\s*([^*]+?)\s*\*/', $cuerpo, $m) && isset($m[1])) {
         $titulo = trim($m[1]);
         $empresa = (preg_match('/Empresa ordenante\s+([^\n\r<]+)/i', $cuerpo, $e) && isset($e[1])) ? trim($e[1]) : '';
@@ -356,7 +384,7 @@ function extraerDatosHtml($cuerpo, $asunto = null)
     }
     // Si no se encontró un valor para 'enviado_a', asignar 'Operación bancaria' por defecto
     if (empty($datos['enviado_a'])) {
-        $datos['enviado_a'] = 'Operación bancaria';
+        $datos['enviado_a'] = 'Operacion bancaria';
     }
     // === FECHA ===
     $fechaRegExps = [
@@ -389,7 +417,8 @@ function extraerDatosHtml($cuerpo, $asunto = null)
         '/N[^\w]*mero de operaci[^\w]*n\s*\*(\d{6,})\*/i',
         '/N[^\w]*mero de operaci[^\w]*n:\s*\*(\d{6,})\*/i',
         '/N[^\w]mero de operaci[^\w]n\s*(\d{6,})/i',
-        '/Número de operación<\/td>\s*<td[^>]*><b>(\d+)<\/b>/i'
+        '/Número de operación<\/td>\s*<td[^>]*><b>(\d+)<\/b>/i',
+        '/N[^\w]*mero\s+de\s+operaci[^\w]*n[^<]*<\/td>\s*<td[^>]*>.*?(\d{6,}).*?<\/td>/si'
     ];
     foreach ($nOperacionRegExps as $regex) {
         if (preg_match($regex, $cuerpo, $m) && isset($m[1])) {
@@ -429,7 +458,18 @@ function formatearFechaISO($fecha_original)
     // Formato "30 de abril de 2025 - 03:40 AM"
     if (preg_match('/(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})\s*-\s*(\d{1,2}:\d{2})\s*(AM|PM)/i', $fecha_original, $matches)) {
         $meses = [
-            'enero' => '01','febrero' => '02','marzo' => '03','abril' => '04','mayo' => '05','junio' => '06','julio' => '07','agosto' => '08','septiembre' => '09','octubre' => '10','noviembre' => '11','diciembre' => '12'
+            'enero' => '01',
+            'febrero' => '02',
+            'marzo' => '03',
+            'abril' => '04',
+            'mayo' => '05',
+            'junio' => '06',
+            'julio' => '07',
+            'agosto' => '08',
+            'septiembre' => '09',
+            'octubre' => '10',
+            'noviembre' => '11',
+            'diciembre' => '12'
         ];
 
         $mes = $meses[strtolower($matches[2])] ?? '01';
@@ -444,7 +484,18 @@ function formatearFechaISO($fecha_original)
     // Formato "01 de junio de 2024 11:53 AM"
     elseif (preg_match('/(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})\s+(\d{1,2}:\d{2})\s*(AM|PM)/i', $fecha_original, $matches)) {
         $meses = [
-            'enero' => '01','febrero' => '02','marzo' => '03','abril' => '04','mayo' => '05','junio' => '06','julio' => '07','agosto' => '08','septiembre' => '09','octubre' => '10','noviembre' => '11','diciembre' => '12'
+            'enero' => '01',
+            'febrero' => '02',
+            'marzo' => '03',
+            'abril' => '04',
+            'mayo' => '05',
+            'junio' => '06',
+            'julio' => '07',
+            'agosto' => '08',
+            'septiembre' => '09',
+            'octubre' => '10',
+            'noviembre' => '11',
+            'diciembre' => '12'
         ];
 
         $mes = $meses[strtolower($matches[2])] ?? '01';
@@ -459,7 +510,18 @@ function formatearFechaISO($fecha_original)
     // Formato "01 Abril 2025 - 04:57 PM"
     elseif (preg_match('/(\d{1,2})\s+([a-záéíóúñ]+)\s+(\d{4})\s*-\s*(\d{1,2}:\d{2})\s*(AM|PM)/i', $fecha_original, $matches)) {
         $meses = [
-            'enero' => '01','febrero' => '02','marzo' => '03','abril' => '04','mayo' => '05','junio' => '06','julio' => '07','agosto' => '08','septiembre' => '09','octubre' => '10','noviembre' => '11','diciembre' => '12'
+            'enero' => '01',
+            'febrero' => '02',
+            'marzo' => '03',
+            'abril' => '04',
+            'mayo' => '05',
+            'junio' => '06',
+            'julio' => '07',
+            'agosto' => '08',
+            'septiembre' => '09',
+            'octubre' => '10',
+            'noviembre' => '11',
+            'diciembre' => '12'
         ];
 
         $mes = $meses[strtolower($matches[2])] ?? '01';

@@ -16,7 +16,6 @@ function limpiar() {
     $('#txtdescripcion').val('');
     $('#cmbestado').val('ACTIVO');
     $('#cmbent_bancaria').val('1');
-    $('#cmbempresa').val('0000000001');
 }
 
 function cargarDetEntidadEmpresa() {
@@ -89,7 +88,6 @@ function registrar() {
                     title: 'REGISTRO DE ENTIDAD EMPRESA',
                     text: response.error
                 });
-
             }
             else {
                 Swal.fire({
@@ -126,8 +124,7 @@ function mostrarDatosx(cod) {
             $('#btneditar').removeClass('d-none');
             $('#txtdescripcion').val(response[0].descripcion);
             $('#cmbestado').val(response[0].estado);
-            $('#cmbent_bancaria').val(response[0].identidad_bancaria);
-            $('#cmbempresa').val(response[0].idempresa);   
+            $('#cmbent_bancaria').val(response[0].identidad_bancaria);  
         }
     });
     $('#lbltitulo').html('Editar Destinatario');
@@ -136,7 +133,6 @@ function mostrarDatosx(cod) {
 
 function editar() {
     var parametros = 'descripcion=' + $('#txtdescripcion').val() +
-        '&idempresa=' + $('#cmbempresa').val() +
         '&estado=' + $('#cmbestado').val() +
         '&identidad_bancaria=' + $('#cmbent_bancaria').val() +
         '&cod=' + $('#txtid').val();

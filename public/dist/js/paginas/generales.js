@@ -49,8 +49,8 @@ document.addEventListener('contextmenu', function (e) {
     $("body").prepend(`
           <div id='ajax-overlay'>
              <div id='ajax-overlay-body' class='text-center'>
-                <img src="${URL_PY}public/dist/assets/img/marcianito.gif" alt="Cargando..." />
-                <p class='mt-1' style='font-size: 30px;'>Hackeando sus datos...</p>
+                <img src="${URL_PY}public/dist/assets/img/carga2.gif" alt="Cargando..." />
+                <p class='mt-1' style='font-size: 30px;'>Cargando Datos...</p>
              </div>
           </div>
        `);
@@ -94,11 +94,6 @@ document.addEventListener('contextmenu', function (e) {
 
 function abrirModalEmpresa() {
   var myModal = new bootstrap.Modal(document.getElementById('mdlcambio'));
-    myModal.show();
-}
-
-function abrirModalPerfil() {
-  var myModal = new bootstrap.Modal(document.getElementById('mdlperfil'));
     myModal.show();
 }
 
@@ -231,4 +226,23 @@ function cambioEmpresa() {
       }
     }
   });
+}
+
+function abrirModalPerfil(cod) {
+    var parametros = 'cod=' + cod;
+    const url = URL_PY + 'personal/personalxcod';
+    //console.log(parametros);
+    $.ajax({
+        type: "GET",
+        url: url,
+        data: parametros,
+        success: function (response) {
+            //console.log(response);
+            $('#txtidp').val(cod);
+            $('#txtnombrep').val(response[0].nombre);
+            $('#txtfotop').val(response[0].fotito);
+            $('#txtcorreo').val(response[0].correo);
+        }
+    });
+    $('#mdlpersonal').modal('show');
 }

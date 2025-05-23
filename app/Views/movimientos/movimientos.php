@@ -64,19 +64,19 @@ $this->extend('dashboard/template.php'); ?>
                                     <div class="col-4">
                                         <div class="form-group mb-3">
                                             <label>Fecha</label>
-                                            <input type="date" class="form-control" id="datefecha" name="datefecha" value="<?php echo date('Y-m-d'); ?>" />
+                                            <input type="date" class="form-control" id="datefecha" name="datefecha" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>" />
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="form-group mb-3">
                                             <label>Monto</label>
-                                            <input type="text" class="form-control" id="txtmonto" name="txtmonto" placeholder="Monto" maxlength="8">
+                                            <input type="text" class="form-control" id="txtmonto" name="txtmonto" placeholder="Monto" maxlength="8" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="form-group mb-3">
                                             <label>N° operación</label>
-                                            <input type="text" class="form-control" id="txtnoperacion" name="txtnoperacion" placeholder="Número de operación" maxlength="20">
+                                            <input type="text" class="form-control" id="txtnoperacion" name="txtnoperacion" placeholder="Número de operación" maxlength="20" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
                                 </div>
@@ -97,6 +97,7 @@ $this->extend('dashboard/template.php'); ?>
                                 <div class="row row-cards">
                                     <div class="col-12">
                                         <div class="form-group mb-3">
+                                            <input type="hidden" id="txtidmovsalida" name="txtidmovsalida">
                                             <label>Cuenta</label>
                                             <select class="form-select" id="cmbdetentempresa2" name="cmbdetentempresa2">
                                                 <?php foreach ($cuentas as $cuentasreg): ?>
@@ -134,33 +135,34 @@ $this->extend('dashboard/template.php'); ?>
                                     <div class="col-4">
                                         <div class="form-group mb-3">
                                             <label>Fecha</label>
-                                            <input type="date" class="form-control" id="datefecha2" name="datefecha2" value="<?php echo date('Y-m-d'); ?>" />
+                                            <input type="date" class="form-control" id="datefecha2" name="datefecha2" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>" />
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="form-group mb-3">
                                             <label>Monto</label>
-                                            <input type="text" class="form-control" id="txtmonto2" name="txtmonto2" placeholder="Monto" maxlength="8">
+                                            <input type="text" class="form-control" id="txtmonto2" name="txtmonto2" placeholder="Monto" maxlength="8" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
                                     <div class="col-4">
                                         <div class="form-group mb-3">
                                             <label>N°operación</label>
-                                            <input type="text" class="form-control" id="txtnoperacion2" name="txtnoperacion2" placeholder="Número de operación" maxlength="20">
+                                            <input type="text" class="form-control" id="txtnoperacion2" name="txtnoperacion2" placeholder="Número de operación" maxlength="20" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row row-cards">
                                     <div class="col-12">
-                                        <button class="btn btn-primary btn-5 ms-auto" onclick="registrarMovSalida()"><i class="fa-solid fa-floppy-disk"></i>
+                                        <button class="btn btn-primary btn-5 ms-auto" onclick="registrarMovSalida()" id="btnregistrar2" name="btnregistrar2">
+                                            <i class="fa-solid fa-floppy-disk"></i>
                                             &nbsp;Registrar
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!------------------------------------------------- FIN DE TABS ----------------------------------------------------->
                     </div>
+                    <!------------------------------------------------- FIN DE TABS ----------------------------------------------------->
                 </div>
                 <!------------------------------------------------ TABLA MOVIMIENTOS ---------------------------------------------------->
                 <div class="card-body">
@@ -229,11 +231,11 @@ $this->extend('dashboard/template.php'); ?>
                 <div class="row mb-3">
                     <div class="col-6">
                         <label class="form-label">Fecha de inicio:</label>
-                        <input type="date" class="form-control" id="dtpfechaini" name="dtpfechaini" value="<?php echo date('Y-m-d'); ?>" />
+                        <input type="date" class="form-control" id="dtpfechaini" name="dtpfechaini" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>" />
                     </div>
                     <div class="col-6">
                         <label class="form-label">Fecha de fin:</label>
-                        <input type="date" class="form-control" id="dtpfechafin" name="dtpfechafin" value="<?php echo date('Y-m-d'); ?>" />
+                        <input type="date" class="form-control" id="dtpfechafin" name="dtpfechafin" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -269,11 +271,11 @@ $this->extend('dashboard/template.php'); ?>
                 <div class="row mb-3">
                     <div class="col-6">
                         <label class="form-label">Saldo</label>
-                        <input type="text" class="form-control" id="txtsaldo" name="txtsaldo" placeholder="Saldo" maxlength="8">
+                        <input type="text" class="form-control" id="txtsaldo" name="txtsaldo" placeholder="Saldo" maxlength="8" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)">
                     </div>
                     <div class="col-6">
                         <label class="form-label">N°Operación</label>
-                        <input type="text" class="form-control" id="txtnoperacionS" name="txtnoperacionS" placeholder="Número de Operación" maxlength="12">
+                        <input type="text" class="form-control" id="txtnoperacionS" name="txtnoperacionS" placeholder="Número de Operación" maxlength="12" onkeypress="return (event.charCode >= 48 && event.charCode <= 57)">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -282,6 +284,47 @@ $this->extend('dashboard/template.php'); ?>
                     </button>
                     <button class="btn btn-success btn-5 ms-auto" id="btngenerar" name="btngenerar" onclick="registrarMovSaldo()">
                         <i class="fa-solid fa-money-bills"></i>&nbsp; Registrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!---------------------------------------------------------MODAL MOTIVO----------------------------------------------------------------->
+<div class="modal modal-blur fade" tabindex="-1" role="dialog" id="mdlmotivo" name="mdlmotivo">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="lbltitulo4" name="lbltitulo4" class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="col-12">
+                        <label class="form-label">N° de Operación:</label>
+                        <input type="text" class="form-control" id="txtidoperacion" name="txtidoperacion" disabled>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="col-12">
+                        <label class="form-label">Enviado a:</label>
+                        <input type="text" class="form-control" id="txtenviadoa" name="txtenviadoa" disabled>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="col-12">
+                        <label class="form-label">Motivo:</label>
+                        <input type="text" class="form-control" id="txtmotivo" name="txtmotivo" placeholder="Motivo">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn me-auto" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button class="btn btn-primary btn-5 ms-auto" onclick="editar()" id="btneditar" name="btneditar">
+                        <i class="fa-solid fa-square-plus"></i>
+                        &nbsp;Guardar
                     </button>
                 </div>
             </div>

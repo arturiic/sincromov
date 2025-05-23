@@ -22,19 +22,38 @@ class MovimientosModel extends Model
     ];
 
     public function registrarSincroMov($idempresa, $titulo, $enviado_a, $fecha_hora, $monto, $moneda, $noperacion)
-    {
-        $sql = "CALL REGISTRAR_SINCROMOV(?, ?, ?, ?, ?, ?, ?)";
-        $query = $this->db->query($sql, [
-            $idempresa,
-            $titulo,
-            $enviado_a,
-            $fecha_hora,
-            $monto,
-            $moneda,
-            $noperacion
-        ]);
-        return $query->getRow()->mensaje ?? 'ERROR DESCONOCIDO';
+{
+    $sql = "CALL REGISTRAR_SINCROMOV(?, ?, ?, ?, ?, ?, ?)";
+    $query = $this->db->query($sql, [
+        $idempresa,
+        $titulo,
+        $enviado_a,
+        $fecha_hora,
+        $monto,
+        $moneda,
+        $noperacion
+    ]);
+    
+    // Obtener el resultado completo (resultado y mensaje)
+    $result = $query->getRow();
+    
+    // Liberar el resultset
+    $query->freeResult();
+    
+    if ($result) {
+        return [
+            'resultado' => $result->resultado ?? 'ERROR',
+            'mensaje' => $result->mensaje ?? 'Error desconocido',
+            'noperacion' => $noperacion
+        ];
     }
+    
+    return [
+        'resultado' => 'ERROR',
+        'mensaje' => 'No se recibió respuesta del procedimiento almacenado',
+        'noperacion' => $noperacion
+    ];
+}
     //PARA REGISTRAR MOVS CON SP
     public function registrarMovimientos($xmlContent)
     {
@@ -65,7 +84,7 @@ class MovimientosModel extends Model
     {
         return $this->select('idmov_finanzas,
                             IFNULL(NULLIF(dest.nombre, ""), mov_finanzas.enviado_a) as destinatario,
-                            IFNULL(observacion, "-") as observacion,
+                            IFNULL(observacion, "") as observacion,
                             fecha,
                             monto,
                             tipo,
@@ -81,7 +100,7 @@ class MovimientosModel extends Model
     {
         return $this->select('idmov_finanzas,
                             IFNULL(NULLIF(dest.nombre, ""), mov_finanzas.enviado_a) as destinatario,
-                            IFNULL(observacion, "-") as observacion,
+                            IFNULL(observacion, "") as observacion,
                             fecha,
                             monto,
                             tipo,
@@ -134,4 +153,20 @@ class MovimientosModel extends Model
             return 'Error:' . $e->getMessage();
         }
     }
+    public function movimientosXcod($cod)
+{
+    return $this->select('mov_finanzas.idmov_finanzas,
+                        mov_finanzas.iddestinatario,
+                        mov_finanzas.iddet_entidad_empresa,
+                        mov_finanzas.nombre_depositante,
+                        mov_finanzas.observacion,
+                        mov_finanzas.fecha,
+                        mov_finanzas.monto,
+                        mov_finanzas.tipo,
+                        mov_finanzas.noperacion,
+                        IFNULL(NULLIF(dest.nombre, ""), mov_finanzas.enviado_a) as enviado_a')
+        ->join('destinatario dest', 'mov_finanzas.iddestinatario = dest.iddestinatario', 'left')
+        ->where('mov_finanzas.idmov_finanzas', $cod)
+        ->first();
+}
 }

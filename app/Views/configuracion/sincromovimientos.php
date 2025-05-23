@@ -15,10 +15,18 @@ $this->extend('dashboard/template.php'); ?>
             <!-- form start -->
             <div class="card-body">
                 <div class="row row-cards">
-                    <div class="col-md-8 col-12">
+                    <div class="col-md-4 col-12">
                         <div class="form-group">
-                            <label>Fecha</label>
-                            <input type="date" class="form-control" id="datefecha" value="<?php echo date('Y-m-d'); ?>">
+                            <label>Fecha de Inicio</label>
+                            <input type="date" class="form-control" id="datefechaini" value="<?php echo date('Y-m-d'); ?>"
+                                max="<?php echo date('Y-m-d'); ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Fecha de Fin</label>
+                            <input type="date" class="form-control" id="datefechafin" value="<?php echo date('Y-m-d'); ?>"
+                                max="<?php echo date('Y-m-d'); ?>">
                         </div>
                     </div>
                     <div class="col-md-4 col-12 d-flex align-items-end">
@@ -29,7 +37,7 @@ $this->extend('dashboard/template.php'); ?>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="tbl_sincromovi" class="table table-bordered table-hover dataTable dtr-inline">
+                    <table id="tbl_sincromovi" name="tbl_sincromovi" class="table table-bordered table-hover dataTable dtr-inline">
                         <thead>
                             <tr>
                                 <th>Titulo</th>
